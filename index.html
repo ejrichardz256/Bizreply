@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizReply</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f2f4f8;
+    }
+
+    header {
+      background: #1e7d3e;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h2 {
+      margin: 0;
+    }
+
+    .container {
+      padding: 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    button {
+      padding: 10px;
+      margin-top: 8px;
+      background: #1e7d3e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      width: 100%;
+      font-weight: bold;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #f9f9f9;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 8px;
+    }
+
+    .small {
+      font-size: 13px;
+      color: gray;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge {
+      background: gold;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: black;
+    }
+
+    .upgrade {
+      background: black;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="topbar">
+    <h2>BizReply</h2>
+    <span class="badge" id="proStatus">FREE</span>
+  </div>
+
+  <!-- 🔥 PAYMENT BUTTON -->
+  <button class="upgrade" onclick="showPayment()">Upgrade to Pro 💰</button>
+</header>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="card">
+    <h3>Dashboard</h3>
+    <p id="stats" class="small"></p>
+  </div>
+
+  <!-- REPLIES -->
+  <div class="card">
+    <h3>Quick Replies</h3>
+    <button onclick="addReply()">+ Add Reply</button>
+    <ul id="replyList"></ul>
+  </div>
+
+  <!-- CUSTOMERS -->
+  <div class="card">
+    <h3>Customers</h3>
+    <button onclick="addCustomer()">+ Add Customer</button>
+    <ul id="customerList"></ul>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
