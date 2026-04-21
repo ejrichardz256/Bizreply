@@ -9,41 +9,51 @@
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      background: #f2f4f8;
+      background: #eef2f7;
+      color: #111;
     }
 
     header {
-      background: #1e7d3e;
+      background: linear-gradient(135deg, #1e7d3e, #145a2c);
       color: white;
       padding: 20px;
       text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
 
     header h2 {
       margin: 0;
+      font-size: 22px;
     }
 
     .container {
       padding: 15px;
+      max-width: 600px;
+      margin: auto;
     }
 
     .card {
       background: white;
       padding: 15px;
       margin-bottom: 15px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     }
 
     button {
-      padding: 10px;
-      margin-top: 8px;
+      padding: 12px;
+      margin-top: 10px;
       background: #1e7d3e;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       width: 100%;
       font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #145a2c;
     }
 
     ul {
@@ -52,21 +62,16 @@
     }
 
     li {
-      background: #f9f9f9;
+      background: #f5f7fa;
       padding: 10px;
       margin-top: 8px;
-      border-radius: 8px;
+      border-radius: 10px;
+      border: 1px solid #e4e8ef;
     }
 
     .small {
       font-size: 13px;
-      color: gray;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      color: #666;
     }
 
     .badge {
@@ -75,10 +80,11 @@
       border-radius: 20px;
       font-size: 12px;
       color: black;
+      font-weight: bold;
     }
 
     .upgrade {
-      background: black;
+      background: #000;
       margin-top: 10px;
     }
   </style>
@@ -86,40 +92,59 @@
 
 <body>
 
-<header>
-  <div class="topbar">
-    <h2>BizReply</h2>
-    <span class="badge" id="proStatus">FREE</span>
+<!-- LOGIN -->
+<div class="container" id="loginBox">
+  <div class="card">
+    <h3>Login to BizReply 🔐</h3>
+    <input id="username" placeholder="Enter username"
+      style="width:100%;padding:10px;margin-top:10px;border-radius:8px;border:1px solid #ddd;">
+    <button onclick="loginUser()">Login</button>
   </div>
+</div>
 
-  <!-- 🔥 PAYMENT BUTTON -->
-  <button class="upgrade" onclick="showPayment()">Upgrade to Pro 💰</button>
+<!-- APP -->
+<div id="app" style="display:none;">
+
+<header>
+  <h2>BizReply</h2>
+  <span class="badge" id="proStatus">FREE</span>
 </header>
 
 <div class="container">
 
-  <!-- STATS -->
   <div class="card">
     <h3>Dashboard</h3>
     <p id="stats" class="small"></p>
   </div>
 
-  <!-- REPLIES -->
+  <div class="card">
+    <h3>Admin Analytics 📊</h3>
+    <p class="small" id="adminStats"></p>
+  </div>
+
   <div class="card">
     <h3>Quick Replies</h3>
     <button onclick="addReply()">+ Add Reply</button>
     <ul id="replyList"></ul>
   </div>
 
-  <!-- CUSTOMERS -->
   <div class="card">
     <h3>Customers</h3>
     <button onclick="addCustomer()">+ Add Customer</button>
     <ul id="customerList"></ul>
   </div>
 
+  <div class="card">
+    <h3>Grow BizReply</h3>
+    <button onclick="inviteFriend()">Invite Friends 🔗</button>
+    <p class="small">Invite 5 friends to unlock Pro free</p>
+  </div>
+
 </div>
 
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script src="app.js"></script>
 
 </body>

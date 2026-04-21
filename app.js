@@ -1,30 +1,59 @@
+const supabaseUrl = "https://ycrxddjxtuhtgtyrjekx.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljcnhkZGp4dHVodGd0eXJqZWt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NzUzNjYsImV4cCI6MjA5MjM1MTM2Nn0.IuZYKluPNpTyX3aASrb25jvtRb8ibid5qQGFVBw9a8Y";
+
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 let replies = JSON.parse(localStorage.getItem("replies")) || [];
-let customers = JSON.parse(localStorage.getItem("customers")) || [];
+let customers = [];
 let isPro = localStorage.getItem("isPro") === "true";
+let referrals = Number(localStorage.getItem("referrals") || 0);
+let currentUser = localStorage.getItem("currentUser") || null;
 
 // ===== INIT =====
-window.onload = () => {
+window.onload = async () => {
+  if (currentUser) {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("app").style.display = "block";
+
+    await renderCustomers(); // only load if logged in
+  }
+
   renderReplies();
-  renderCustomers();
   updateStats();
+  updateAdmin();
 };
 
-// ===== DASHBOARD =====
-function updateStats() {
-  const statsEl = document.getElementById("stats");
-  const proEl = document.getElementById("proStatus");
+// ===== LOGIN =====
+async function loginUser() {
+  const name = document.getElementById("username").value;
 
-  if (statsEl) {
-    statsEl.innerText =
-      `Customers: ${customers.length} | Replies: ${replies.length}`;
-  }
+  if (!name) return alert("Enter username");
 
-  if (proEl) {
-    proEl.innerText = isPro ? "PRO" : "FREE";
-  }
+  currentUser = name;
+  localStorage.setItem("currentUser", name);
+
+  document.getElementById("loginBox").style.display = "none";
+  document.getElementById("app").style.display = "block";
+
+  await renderCustomers(); // 🔥 load immediately
+  updateStats();
+  updateAdmin();
 }
 
-// ===== QUICK REPLIES =====
+// ===== STATS =====
+function updateStats() {
+  document.getElementById("stats").innerText =
+    `User: ${currentUser} | Customers: ${customers.length} | Replies: ${replies.length} | Referrals: ${referrals}/5`;
+
+  document.getElementById("proStatus").innerText = isPro ? "PRO" : "FREE";
+}
+
+// ===== ADMIN =====
+function updateAdmin() {
+  document.getElementById("adminStats").innerText =
+    `Customers: ${customers.length}\nReplies: ${replies.length}\nReferrals: ${referrals}/5\nPro: ${isPro ? "ACTIVE" : "INACTIVE"}`;
+}
+
+// ===== REPLIES =====
 function addReply() {
   const text = prompt("Enter reply:");
   if (!text) return;
@@ -34,118 +63,103 @@ function addReply() {
 
   renderReplies();
   updateStats();
+  updateAdmin();
 }
 
 function renderReplies() {
   const list = document.getElementById("replyList");
-  if (!list) return;
+if (!list) return;
 
-  list.innerHTML = "";
+list.innerHTML = "";
 
-  replies.forEach((r) => {
-    const li = document.createElement("li");
+  replies.forEach(r => {
+    let li = document.createElement("li");
     li.innerText = r;
-
-    li.onclick = () => {
-      navigator.clipboard.writeText(r);
-      alert("Copied!");
-    };
-
+    li.onclick = () => navigator.clipboard.writeText(r);
     list.appendChild(li);
   });
 }
 
 // ===== CUSTOMERS =====
-function addCustomer() {
+async function addCustomer() {
   const name = prompt("Customer name:");
   const product = prompt("Product:");
 
   if (!name || !product) return;
 
-  customers.push({ name, product });
-  localStorage.setItem("customers", JSON.stringify(customers));
+  const { error } = await supabase
+    .from("customers")
+    .insert([{ name, product, user_id: currentUser }]);
 
-  renderCustomers();
-  updateStats();
+  if (error) {
+    alert("Error saving customer");
+    console.log(error);
+    return;
+  }
+
+  await renderCustomers();
 }
 
-function renderCustomers() {
+async function renderCustomers() {
   const list = document.getElementById("customerList");
   if (!list) return;
 
   list.innerHTML = "";
 
-  customers.forEach((c, index) => {
-    const li = document.createElement("li");
+  const { data, error } = await supabase
+    .from("customers")
+    .select("*")
+    .eq("user_id", currentUser);
+
+  if (error) {
+    console.log(error);
+    return;
+  }
+
+  customers = data;
+
+  customers.forEach((c) => {
+    let li = document.createElement("li");
 
     li.innerHTML = `
       <b>${c.name}</b> - ${c.product}
-      <br>
-      <button onclick="sendWhatsApp(${index})">Send WhatsApp</button>
+      <button onclick="sendWhatsApp('${c.name}','${c.product}')">
+        Send WhatsApp
+      </button>
     `;
 
     list.appendChild(li);
   });
-}
-
-// ===== WHATSAPP (PRO FEATURE) =====
-function sendWhatsApp(index) {
-  if (!isPro) {
-    alert("Upgrade to Pro to use WhatsApp feature");
-    return;
-  }
-
-  const c = customers[index];
-
-  const message = `Hello ${c.name}, your order for ${c.product} is being processed.`;
-
-  const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-
-  window.open(url, "_blank");
-}
-
-// ===== PAYMENT SYSTEM =====
-function showPayment() {
-  if (isPro) {
-    alert("You are already Pro 🚀");
-    return;
-  }
-
-  const msg = `
-💰 Upgrade to BizReply Pro
-
-Pay UGX 10,000 using Mobile Money:
-
-📲 MTN: +256783018209
-📲 Airtel: +256707477220
-
-After payment:
-1. Press OK
-2. Enter Transaction ID
-3. You will be upgraded to Pro
-`;
-
-  const proceed = confirm(msg);
-
-  if (proceed) {
-    const txn = prompt("Enter Transaction ID:");
-
-    if (txn && txn.trim().length > 3) {
-      verifyPayment(txn);
-    } else {
-      alert("Invalid Transaction ID");
-    }
-  }
-}
-
-// ===== VERIFY PAYMENT (SIMULATED) =====
-function verifyPayment(txn) {
-  console.log("Transaction received:", txn);
-
-  isPro = true;
-  localStorage.setItem("isPro", "true");
-
-  alert("Payment verified! You are now PRO 🚀");
 
   updateStats();
+  updateAdmin();
+}
+
+// ===== WHATSAPP =====
+function sendWhatsApp(name, product) {
+  if (!isPro) return alert("Upgrade to Pro");
+
+  const msg = `Hello ${name}, your order for ${product} is ready.`;
+
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+}
+
+// ===== REFERRAL =====
+function inviteFriend() {
+  navigator.clipboard.writeText(window.location.href);
+  trackReferral();
+}
+
+function trackReferral() {
+  referrals++;
+  localStorage.setItem("referrals", referrals);
+
+  if (referrals >= 5 && !isPro) {
+    isPro = true;
+    localStorage.setItem("isPro", "true");
+    alert("You unlocked PRO 🎉");
+  }
+
+  updateStats();
+  updateAdmin();
 }
