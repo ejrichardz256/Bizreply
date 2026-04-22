@@ -1,3 +1,4 @@
+alert("JS loaded");
 const supabaseUrl = "https://ycrxddjxtuhtgtyrjekx.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljcnhkZGp4dHVodGd0eXJqZWt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NzUzNjYsImV4cCI6MjA5MjM1MTM2Nn0.IuZYKluPNpTyX3aASrb25jvtRb8ibid5qQGFVBw9a8Y";
 
@@ -243,4 +244,14 @@ async function logout() {
   document.getElementById("loginBox").style.display = "block";
 
   alert("Logged out");
+}
+function signUp() {
+  alert("Signup clicked"); // 👈 ADD THIS
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  alert(email + " " + password); // 👈 DEBUG
+
+  supabase.auth.signUp({ email, password })
 }
