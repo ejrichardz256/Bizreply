@@ -95,9 +95,16 @@
 <!-- LOGIN -->
 <div class="container" id="loginBox">
   <div class="card">
-    <h3>Login to BizReply 🔐</h3>
-    <input id="username" placeholder="Enter username"
+    <h3>Login / Signup 🔐</h3>
+
+    <input id="email" placeholder="Email"
       style="width:100%;padding:10px;margin-top:10px;border-radius:8px;border:1px solid #ddd;">
+
+    <input id="password" type="password" placeholder="Password"
+      style="width:100%;padding:10px;margin-top:10px;border-radius:8px;border:1px solid #ddd;">
+
+    <!-- FIX: must match JS function name -->
+    <button onclick="signUp()">Create Account</button>
     <button onclick="loginUser()">Login</button>
   </div>
 </div>
@@ -107,7 +114,14 @@
 
 <header>
   <h2>BizReply</h2>
+
   <span class="badge" id="proStatus">FREE</span>
+
+  <!-- 🔥 ADD LOGOUT -->
+  <button onclick="logout()" 
+  style="margin-top:10px;background:red;border:none;border-radius:10px;padding:10px;color:white;width:100%;font-weight:bold;cursor:pointer;">
+  Logout
+</button>
 </header>
 
 <div class="container">
